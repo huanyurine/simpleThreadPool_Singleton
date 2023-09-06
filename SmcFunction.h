@@ -11,7 +11,7 @@ void mat_func(Eigen::VectorXd* ptr, const Eigen::Ref<const Eigen::MatrixXd>& mat
 	(*ptr)(i) = (mat.row(i) * col_v * (i + 1))(0);
 }
 
-void vec_func(double* ptr, const Eigen::Ref<const Eigen::RowVectorXd>& row_v, const Eigen::Ref<const Eigen::VectorXd>& col_v, int i) {
+void vec_func(double* ptr, const Eigen::Ref<const Eigen::RowVectorXd>&& row_v, const Eigen::Ref<const Eigen::VectorXd>& col_v, int i) {
 	*ptr = (row_v * col_v * (i + 1))(0);
 }
 

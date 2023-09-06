@@ -44,7 +44,7 @@ int main() {
     std::vector<std::future<void>> results;
     for (int i = 0; i < mat_row; ++i) {
         double* ptr = &(mat_out(i));
-        results.emplace_back(pool.enqueue(vec_func, ptr, std::move(mat_in.row(i)), v, i));
+        results.emplace_back(pool.enqueue(vec_func, ptr, std::move(mat_in.row(i)), v, i));  //mat_in.row(i) 是右值，使用 && 传参；v 是左值，使用 & 传参
         vptr.push_back(ptr);
     }
 
@@ -56,8 +56,8 @@ int main() {
         delete ptr;
     }
 
-    //std::cout << mat_out << std::endl;
+    std::cout << mat_out << std::endl;
     std::cout << "----------" << std::endl;
-    system("pause");
+    //system("pause");
     return 0;
 }
