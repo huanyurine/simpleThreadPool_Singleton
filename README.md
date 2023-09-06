@@ -1,2 +1,2 @@
 # simpleThreadPool_Singleton
-simple Thread Pool, Singleton, Eigen
+simple thread pool, singleton, Eigen
