@@ -19,8 +19,7 @@ public:
     void get_id();
 
     template<typename F, typename... Args>
-    auto enqueue(F&& f, Args&&... args)
-        -> std::future<typename std::result_of<F(Args...)>::type>;
+    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
 private:
     ThreadPool(int numThreads);
     ThreadPool(const ThreadPool&) = delete;    //只能在第一个声明中删除函数
@@ -37,16 +36,13 @@ private:
 ThreadPool& get_instance(int numThreads);
 
 template<typename F, typename... Args>
-auto ThreadPool::enqueue(F&& f, Args&&... args)
--> std::future<typename std::result_of<F(Args...)>::type>{
+auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
     using return_type = typename std::result_of<F(Args...)>::type;
-    auto task = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+    auto task = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<F>(f), std::forward<Args>(args)...));
     std::future<return_type> res = task->get_future();
     {
         std::unique_lock<std::mutex> lock(mtx_);
-        if (stop_)   //停止池后不允许排队
-            throw std::runtime_error("enqueue on stopped ThreadPool");
+        if (stop_) { throw std::runtime_error("enqueue on stopped ThreadPool"); }   //停止池后不允许排队
         tasks_.emplace([task]() {(*task)(); });
     }
     cv_.notify_one();

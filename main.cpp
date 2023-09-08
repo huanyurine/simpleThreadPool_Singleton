@@ -7,14 +7,14 @@ void save() {
     ThreadPool& pool = get_instance(std::thread::hardware_concurrency());
     ThreadPool& pool_a = get_instance(std::thread::hardware_concurrency());
     for (int i = 0; i < 4; ++i) {
-        //pool.get_id();
+        pool.get_id();
         pool.enqueue(func, i);
         pool_a.enqueue(func, 4 + i);
     }
 }
 
 int main() {
-    //int mat_row = 2000;
+    //int mat_row = 2000000;
     int mat_row = 20;
     int mat_col = 3;
     Eigen::MatrixXd mat_in; //Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat;
@@ -34,30 +34,21 @@ int main() {
     //    results.emplace_back(pool.enqueue(mat_func, ptr, mat_in, v, i));
     //}
 
-    //for (auto&& result : results) {
-    //    result.get();
-    //}
-    //ptr = nullptr;
-    //delete ptr;
-
-    std::vector<double*> vptr;
+    double* ptr = nullptr;
     std::vector<std::future<void>> results;
     for (int i = 0; i < mat_row; ++i) {
-        double* ptr = &(mat_out(i));
+        ptr = &(mat_out(i));
         results.emplace_back(pool.enqueue(vec_func, ptr, std::move(mat_in.row(i)), v, i));  //mat_in.row(i) 是右值，使用 && 传参；v 是左值，使用 & 传参
-        vptr.push_back(ptr);
     }
 
     for (auto&& result : results) {
         result.get();
     }
-    for (auto&& ptr : vptr) {
-        ptr = nullptr;
-        delete ptr;
-    }
+    ptr = nullptr;
+    delete ptr;
 
+    std::cout << "----------" << thread_max_num << std::endl;
     std::cout << mat_out << std::endl;
-    std::cout << "----------" << std::endl;
     //system("pause");
     return 0;
 }

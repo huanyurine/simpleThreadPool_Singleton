@@ -9,9 +9,7 @@ ThreadPool::ThreadPool(int numThreads) : stop_(false) {
             while (true) {
                 std::unique_lock<std::mutex> lock(this->mtx_);
                 this->cv_.wait(lock, [this] { return this->stop_ || !this->tasks_.empty(); });
-                if (this->stop_ && this->tasks_.empty()) {
-                    return;
-                }
+                if (this->stop_ && this->tasks_.empty()) { return; }
                 std::function<void()> task(std::move(this->tasks_.front()));
                 this->tasks_.pop();
                 lock.unlock();
@@ -27,9 +25,7 @@ ThreadPool::~ThreadPool() {
         this->stop_ = true;
     }
     this->cv_.notify_all();
-    for (std::thread& thread_: this->threads_) {
-        thread_.join();
-    }
+    for (std::thread& thread_ : this->threads_) { thread_.join(); }
 }
 void ThreadPool::get_id() {
     std::cout << "object's this  addr: " << this << std::endl;
